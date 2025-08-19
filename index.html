@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Birthday Deepak</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Satoshi:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Satoshi', sans-serif;
+        background-color: #0c0a09;
+        overflow: hidden;
+        color: #eaeaea;
+      }
+      h1, h2 {
+        font-family: 'Playfair Display', serif;
+        background: linear-gradient(to right, #fff, #f9a8d4);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .glass {
+        background: rgba(20, 20, 20, 0.55);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      }
+      .btn {
+        @apply px-6 py-2 text-white font-bold rounded-full bg-gradient-to-r from-pink-500 to-red-500 shadow-lg;
+        transition: all 0.3s ease-in-out;
+      }
+      .btn:hover {
+        transform: scale(1.05) translateY(-2px);
+        box-shadow: 0 0 15px rgba(255, 105, 135, 0.7);
+      }
+      .btn:active {
+        transform: scale(0.98);
+      }
+      .progress-track {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 6px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        z-index: 50;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(to right, #f472b6, #ef4444);
+        transition: width 0.6s ease;
+      }
+      canvas.bg-aurora {
+        position: fixed;
+        z-index: -10;
+        width: 100%;
+        height: 100%;
+      }
+      canvas#heartsCanvas {
+        position: fixed;
+        z-index: -9;
+        top: 0;
+        left: 0;
+      }
+      .polaroid {
+        background: #fff;
+        padding: 8px;
+        border: 1px solid #ccc;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        transform: rotate(-3deg);
+        transition: transform 0.3s ease;
+      }
+      .polaroid:hover {
+        transform: rotate(0deg) scale(1.03);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress-track">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+    <canvas id="auroraCanvas" class="bg-aurora"></canvas>
+    <canvas id="heartsCanvas"></canvas>
+
+    <div id="app" class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-10 space-y-8"></div>
+
+    <script>
+      const steps = [
+        {
+          icon: "❤️",
+          title: "Hey Jansiii❤️ ,",
+          text: "I built this digital surprise😸😸just for you,to light up your smile on your most special day.",
+          button: "Click here Madam ji"
+        },
+        {
+          icon: "🎉",
+          title: "Happy Birthday❤️!!!",
+          text: "Tumhara har ek saal duniya ko aur khoobsurat banata hai.You’re not just a blessing–tum ek khwab ho jo haqiqat ban gaya.Main har din thankful hoon ki tum meri life mein ho.",
+          button: "This surprise isn’t over yet..."
+        },
+        {
+          title: "A Few Things I Adore About You",
+          bento: true,
+          button: "aage badhe madam jii?"
+        },
+        {
+          title: "Only For You...",
+          image: "https://i.ibb.co/Zpjgf4JX/IMG-20250814-235630.jpg",
+          caption: "Tum me wo baat hai.....jo shayri ko bhi sharma de 🎆",
+          text: "Jitni sundar tum lgtii ho...Utna shayad chand bhi na lage🧿 ❤️",
+          button: "final touch"
+        },
+        {
+          icon: "🎂",
+          title: "My Wish For You",
+          text: "May the next year bring you all the love, success, and pure happiness you so rightfully deserve. May your dreams soar higher than ever.",
+          button: "Celebrate!!",
+          finale: true
+        }
+      ];
+
+      let currentStep = 0;
+      const app = document.getElementById('app');
+      const progressBar = document.getElementById('progressBar');
+
+      function renderStep(index) {
+        app.innerHTML = '';
+        const s = steps[index];
+
+        const card = document.createElement('div');
+        card.className = 'glass max-w-xl w-full p-8 rounded-2xl text-center animate-fadeInUp';
+
+        if (s.icon) {
+          const icon = document.createElement('div');
+          icon.className = 'text-6xl mb-4 animate-pulse';
+          icon.textContent = s.icon;
+          card.appendChild(icon);
+        }
+
+        if (s.title) {
+          const title = document.createElement('h1');
+          title.className = 'text-3xl font-semibold mb-4';
+          title.textContent = s.title;
+          card.appendChild(title);
+        }
+
+        if (s.text) {
+          const p = document.createElement('p');
+          p.className = 'text-lg mb-6';
+          p.textContent = s.text;
+          card.appendChild(p);
+        }
+
+        if (s.bento) {
+          const grid = document.createElement('div');
+          grid.className = 'grid grid-cols-2 gap-4 text-left mb-6';
+
+          grid.innerHTML = `
+            <div class="col-span-2 glass p-4 rounded-xl">
+              <h2 class="text-xl font-semibold mb-1">✨ Tumhara attitude😏</h2>
+              <p>Wo thoda sa akadna, muhh banana, 👋 maar dungi bolna...uffff🫠 dil chura le jaata hai. Bilkul "miss perfect-but-I-know-it" vibes!</p>
+            </div>
+            <div class="glass p-4 rounded-xl">
+              <h2 class="text-lg font-semibold mb-1">😊 Tumhari Baate</h2>
+              <p>Tumhari baato me kuch toh baat hai, Jo har din mujhe tumshe aur bhi jyada pyaar krne ke liye majboor krti hai.</p>
+            </div>
+            <div class="col-span-2 glass p-4 rounded-xl">
+              <h2 class="text-xl font-semibold mb-1">🌟 Tumhare liye do sabad </h2>
+              <p>Tumhari kya tarif kre, tumhe dekhu to dil muskuraye, bina kahe hi har baat samjh jaaye. Aaj tumhara janamdin hai, to sirf itna kah du ki kash tumhara agla janamdin bhi mere sath manaya jaye.</p>
+            </div>
+          `;
+          card.appendChild(grid);
+        }
+
+        if (s.image) {
+          const container = document.createElement('div');
+          container.className = 'flex justify-center mb-6';
+
+          const polaroid = document.createElement('div');
+          polaroid.className = 'polaroid';
+          polaroid.innerHTML = `
+            <img src="${s.image}" alt="memory" class="w-64 h-64 object-cover mb-2" />
+            <p class="text-center text-black font-semibold">${s.caption}</p>
+          `;
+
+          container.appendChild(polaroid);
+          card.appendChild(container);
+
+          const p = document.createElement('p');
+          p.className = 'text-lg mb-6';
+          p.textContent = s.text;
+          card.appendChild(p);
+        }
+
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = s.button;
+        btn.onclick = () => {
+          if (s.finale) return triggerFinale(btn);
+          currentStep++;
+          renderStep(currentStep);
+          progressBar.style.width = ((currentStep) / (steps.length - 1)) * 100 + '%';
+        };
+        card.appendChild(btn);
+        app.appendChild(card);
+      }
+
+      function triggerFinale(button) {
+        button.disabled = true;
+        button.style.opacity = 0;
+
+        const final = document.createElement('h2');
+        final.textContent = 'Happy Birthday, Jansii ❤️';
+        final.className = 'text-3xl font-bold mt-6 animate-fadeInUp';
+        app.appendChild(final);
+
+        confetti({ particleCount: 150, spread: 120, origin: { y: 1 } });
+
+        setTimeout(() => {
+          const duration = 4 * 1000;
+          const animationEnd = Date.now() + duration;
+
+          (function frame() {
+            confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, emojis: ["❤️", "💖", "✨"] });
+            confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, emojis: ["❤️", "💖", "✨"] });
+            if (Date.now() < animationEnd) requestAnimationFrame(frame);
+          })();
+        }, 500);
+
+        heartsExit();
+      }
+
+      function heartsExit() {
+        // Animate Three.js hearts upwards and fade out — to be defined
+      }
+
+      renderStep(currentStep);
+    </script>
+  </body>
+    </style>
+  </head>
+  <body>
+    <div class="progress-track">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+    <canvas id="auroraCanvas" class="bg-aurora"></canvas>
+    <canvas id="heartsCanvas"></canvas>
+
+    <div id="app" class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-10 space-y-8">
+      <!-- Steps go here -->
+    </div>
+
+    <script>
+      const steps = [
+        {
+          icon: "❤️",
+          title: "Hey Jansiii❤️ ,",
+          text: "I built this digital surprise😸😸just for you,to light up your smile on your most special day.",
+          button: "Click here Madam ji"
+        },
+        {
+          icon: "🎉",
+          title: "Happy Birthday❤️!!!",
+          text: "Tumhara har ek saal duniya ko aur khoobsurat banata hai.You’re not just a blessing–tum ek khwab ho jo haqiqat ban gaya.Main har din thankful hoon ki tum meri life mein ho.",
+          button: "This surprise isn’t over yet..."
+        },
+        {
+          title: "A Few Things I Adore About You",
+          bento: true,
+          button: "Remember this?"
+        },
+        {
+          title: "That One Time...",
+          image: "https://i.ibb.co/6Z6XgCg/crush.webp",
+          caption: "Our favorite memory.",
+          text: "Every moment with you feels like a scene from a movie I'd watch on repeat.",
+          button: "One last thing..."
+        },
+        {
+          icon: "🎂",
+          title: "My Wish For You",
+          text: "May the next year bring you all the love, success, and pure happiness you so rightfully deserve. May your dreams soar higher than ever.",
+          button: "Celebrate!",
+          finale: true
+        }
+      ];
+
+      let currentStep = 0;
+      const app = document.getElementById('app');
+      const progressBar = document.getElementById('progressBar');
+
+      function renderStep(index) {
+        app.innerHTML = '';
+        const s = steps[index];
+
+        const card = document.createElement('div');
+        card.className = 'glass max-w-xl w-full p-8 rounded-2xl text-center animate-fadeInUp';
+
+        if (s.icon) {
+          const icon = document.createElement('div');
+          icon.className = 'text-6xl mb-4 animate-pulse';
+          icon.textContent = s.icon;
+          card.appendChild(icon);
+        }
+
+        if (s.title) {
+          const title = document.createElement('h1');
+          title.className = 'text-3xl font-semibold mb-4';
+          title.textContent = s.title;
+          card.appendChild(title);
+        }
+
+        if (s.text) {
+          const p = document.createElement('p');
+          p.className = 'text-lg mb-6';
+          p.textContent = s.text;
+          card.appendChild(p);
+        }
+
+        if (s.bento) {
+          const grid = document.createElement('div');
+          grid.className = 'grid grid-cols-2 gap-4 text-left mb-6';
+
+          grid.innerHTML = `
+            <div class="col-span-2 glass p-4 rounded-xl">
+              <h2 class="text-xl font-semibold mb-1">✨ Tumhara attitude😏</h2>
+              <p>Wo thoda sa akadna,muhh banana,👋maar dungi bolna...uffff🫠 dil chura le jaata hai.Bilkul "miss perfect-but-I-know-it"vibes!</p>
+            </div>
+            <div class="glass p-4 rounded-xl">
+              <h2 class="text-lg font-semibold mb-1">😊 Tumhari Baate</h2>
+              <p>Tumhari baato me kuch toh baat hai,Jo har din mujhe tumshe aur bhi jyada pyaar krne ke liye majboor krti hai.</p>
+            </div>
+            <div class="col-span-2 glass p-4 rounded-xl">
+              <h2 class="text-xl font-semibold mb-1">🌟 Tumhare liye do sabad </h2>
+              <p>Tumhari kya tarif kre,tumhe dekhu to dil muskuraye,bina kahe hi har baat samjh jaaye.Aaj tumahara janamdin hai,to sirf itna kah du ki kash tumhara agla janamdin bhi mere sath manaya jaye.</p>
+            </div>
+          `;
+          card.appendChild(grid);
+        }
+
+        if (s.image) {
+          const container = document.createElement('div');
+          container.className = 'flex justify-center mb-6';
+
+          const polaroid = document.createElement('div');
+          polaroid.className = 'polaroid';
+          polaroid.innerHTML = `
+            <img src="${s.image}" alt="memory" class="w-64 h-64 object-cover mb-2" />
+            <p class="text-center text-black font-semibold">${s.caption}</p>
+          `;
+
+          container.appendChild(polaroid);
+          card.appendChild(container);
+
+          const p = document.createElement('p');
+          p.className = 'text-lg mb-6';
+          p.textContent = s.text;
+          card.appendChild(p);
+        }
+
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = s.button;
+        btn.onclick = () => {
+          if (s.finale) return triggerFinale(btn);
+          currentStep++;
+          renderStep(currentStep);
+          progressBar.style.width = ((currentStep) / (steps.length - 1)) * 100 + '%';
+        };
+        card.appendChild(btn);
+        app.appendChild(card);
+      }
+
+      function triggerFinale(button) {
+        button.disabled = true;
+        button.style.opacity = 0;
+
+        const final = document.createElement('h2');
+        final.textContent = 'Happy Birthday, my crush! ❤️';
+        final.className = 'text-3xl font-bold mt-6 animate-fadeInUp';
+        app.appendChild(final);
+
+        confetti({
+          particleCount: 150,
+          spread: 120,
+          origin: { y: 1 },
+        });
+
+        setTimeout(() => {
+          const duration = 4 * 1000;
+          const animationEnd = Date.now() + duration;
+
+          (function frame() {
+            confetti({
+              particleCount: 3,
+              angle: 60,
+              spread: 55,
+              origin: { x: 0 },
+              emojis: ["❤️", "💖", "✨"]
+            });
+            confetti({
+              particleCount: 3,
+              angle: 120,
+              spread: 55,
+              origin: { x: 1 },
+              emojis: ["❤️", "💖", "✨"]
+            });
+            if (Date.now() < animationEnd) requestAnimationFrame(frame);
+          })();
+        }, 500);
+
+        heartsExit();
+      }
+
+      function heartsExit() {
+        // Animate Three.js hearts upwards and fade out — to be defined in rendering logic
+      }
+
+      renderStep(currentStep);
+    </script>
+
+    <!-- Placeholder for aurora and hearts rendering logic (will follow in next update) -->
+  </body>
+</html>
